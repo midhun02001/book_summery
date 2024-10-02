@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Genre Prediction Result{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="font-family: 'Roboto', sans-serif; color: #333;">
+    <h1 class="text-center mb-5" style="font-weight: bold; color: #0056b3;">📚 Genre Prediction Result 📚</h1>
+
+    <!-- Book Summary Section -->
+    <div class="card mb-5 shadow-lg" style="border: none; border-radius: 10px; background-color: #f0f8ff;">
+        <div class="card-header" style="background-color: #17a2b8; color: white; font-size: 1.5rem; font-weight: 600;">
+            📖 Book Summary
+        </div>
+        <div class="card-body" style="padding: 20px;">
+            <p class="text-justify" style="font-size: 1.1rem; line-height: 1.7;">
+                {{ summary }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Predicted Genre Section -->
+    <div class="card mb-5 shadow-lg" style="border: none; border-radius: 10px; background-color: #e9f7ef;">
+        <div class="card-header" style="background-color: #007bff; color: white; font-size: 1.5rem; font-weight: 600;">
+            🔍 Predicted Genre
+        </div>
+        <div class="card-body text-center">
+            <!-- Styled Predicted Genre Text -->
+            <p class="display-4 genre-prediction" style="font-size: 2.5rem; font-weight: bold; color: #28a745;">
+                {{ genre_prediction }}
+            </p>
+            <small class="form-text text-muted">
+                This prediction is based on the summary provided.
+            </small>
+        </div>
+    </div>
+
+    <!-- Word Cloud Section -->
+    <div class="card mb-5 shadow-lg" style="border: none; border-radius: 10px; background-color: #f9f9f9;">
+        <div class="card-header" style="background-color: #6c757d; color: white; font-size: 1.5rem; font-weight: 600;">
+            ☁️ Word Cloud
+        </div>
+        <div class="card-body text-center">
+            <img src="data:image/png;base64,{{ wordcloud_image }}" alt="Word Cloud" style="width: 100%; height: auto; border-radius: 10px;">
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'books' %}" class="btn btn-primary" style="font-weight: 600; font-size: 1.1rem;">
+            <i class="fas fa-book"></i> View All Books
+        </a>
+        <form method="POST" action="{% url 'download_report' %}">
+            {% csrf_token %}
+            <input type="hidden" name="summary" value="{{ summary }}">
+            <input type="hidden" name="genre_prediction" value="{{ genre_prediction }}">
+            <input type="hidden" name="wordcloud_image" value="{{ wordcloud_image }}">
+            <button type="submit" class="btn btn-success" style="font-weight: 600; font-size: 1.1rem;">
+                <i class="fas fa-download"></i> Download Report
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const genrePrediction = document.querySelector('.genre-prediction');
+        genrePrediction.style.opacity = 0;
+        genrePrediction.style.transition = 'opacity 1s ease-in-out';
+
+        // After a short delay, fade in the predicted genre
+        setTimeout(() => {
+            genrePrediction.style.opacity = 1;
+        }, 500);
+    });
+</script>
+{% endblock %}

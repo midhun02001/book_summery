@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+
+{% block title %}{{ book_detail.book_name }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            {% if book_detail %}
+                <h1>{{ book_detail.book_name }}</h1>
+                <span class="float-right">
+                    <span class="btn btn-primary">
+                        <a href="{% url 'book_details_edit' book_detail.id %}" style="text-decoration: none; color: white">
+                            <i class="far fa-edit"> </i> Edit
+                        </a>
+                    </span>
+                <span class="btn btn-danger" id="delete-book-btn" data-toggle="modal" data-target="#delete_book_confirmation" data-id="{{ book_detail.id }}">
+                    <i class="far fa-trash-alt"></i> Delete Book
+                </span>
+                    <span class="btn btn-success">
+                        <a href="https://storyteller-kww83y4altjjyi5urygyun.streamlit.app/" target="_blank" style="text-decoration: none; color: white">
+                        <i class="fas fa-book"></i> Generate Story
+                         </a>
+                    </span>
+                </span>
+                <h3 class="row">
+                    <i class="blockquote-footer col-lg-6 col-md-6 col-sm-12">{{ book_detail.author_name }}</i>
+                    <p class="col-lg-6 col-md-6 col-sm-12" style="color: gray; font-size: 20px;">
+                        <span class="float-right">Read on: {{ book_detail.book_read_on }}</span>
+                    </p>
+                </h3>
+                <hr>
+            {% endif %}
+        </div>
+        
+        
+        
+    </div>
+
+    <div class="row container">
+        <div class="container">{% include 'messages.html' %}</div>
+        <div class="container-fluid">
+            {% if summary %}
+                <div class="jumbotron" style="padding: 15px; border-radius: 0;">
+                    <b>Summary:</b> {{ summary }}
+                </div>
+                <hr>
+            {% endif %}
+        </div>
+  <!-- Add Chapter Button -->
+<h3 class="mb-3">Chapters</h3>
+<a id="add_chapter_btn" class="btn float-right" style="font-size: 25px; color: blue; padding-top: 0;" data-toggle="modal" data-target="#add_chapter">
+    <i class="fas fa-plus" data-toggle="tooltip" title="Add a new chapter"></i>
+</a>
+
+<!-- ---------------------------------------------------------------------- -->
+
+<div class="modal fade" id="add_chapter">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add New Chapter</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <form action="{% url 'add_chapter' book_detail.slug %}" method="post">
+                {% csrf_token %}
+                
+                <div class="modal-body">
+                    <div class="row">
+                        {% for field in add_chapter_form %}
+                        <div class="form-group col-lg-12 col-md-12">
+                            <label>{{ field.label }}</label>
+                            {{ field }}  <!-- No add_css filter needed -->
+                            <div style="color: red;">{{ field.errors|striptags }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-success" value="Add">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- ---------------------------------------------------------------------- -->
+
+
+
+
+
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            {% if chapters %}
+                {% for chapter in chapters %}
+                    <div class="card btn-block mt-2" style="border-radius: 0; padding: 10px; background-color: #fafafa; color: blue; cursor: pointer;">
+                        <div data-toggle="collapse" data-target="#{{ chapter.chapter.id }}" style="text-decoration: none;">
+                            Chapter {{ chapter.chapter.chapter_number }}
+                            <i class="fas fa-caret-down" data-toggle="tooltip" title="Show More"></i>
+                            <div class="float-right">
+  <a href="{% url 'edit_fromchapter' chapter.chapter.id %}" class="chapter-edit-modal" title="Edit Chapter">
+    <i class="far fa-edit"></i>
+</a>
+    <a href="#" class="chapter-delete-modal" data-bs-toggle="modal" data-bs-target="#deleteChapterModal" data-delete-url="{% url 'delete_chapter' chapter.chapter.id %}" title="Delete Chapter">
+        <i class="far fa-trash-alt"></i>
+    </a>
+</div>
+<!-- ------------------------------------------------------------------------------------------------ -->
+
+<!-- Edit Chapter Modal -->
+<div class="modal fade" id="editChapterModal" tabindex="-1" aria-labelledby="editChapterLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editChapterLabel">Edit Chapter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editChapterForm" method="POST" action="{% url 'edit_fromchapter' chapter.chapter.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Delete Chapter Modal -->
+<!-- Modal structure -->
+<div class="modal fade" id="deleteChapterModal" tabindex="-1" aria-labelledby="deleteChapterLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteChapterLabel">Delete Chapter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this chapter?</p>
+            </div>
+            <div class="modal-footer">
+                <!-- Move the form outside of the footer buttons -->
+                <form id="deleteChapterForm" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                <!-- Cancel button outside of the form -->
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+                        </div>
+                        <div class="collapse" id="{{ chapter.chapter.id }}">
+                            <div style="border-radius: 0;">
+                                <div class="row">
+                                    <div class="col" style="color: black">
+                                        <hr>
+                                        {{ chapter.chapter.description }}
+                                        <hr>
+                                        <div>
+                                            <strong>Average Rating:</strong>
+                                            <span class="rating">
+                                                {% for i in "☆☆☆☆☆" %}
+                                                    {% if forloop.counter <= chapter.average_rating|floatformat:0 %}
+                                                        <span class="star filled">★</span>
+                                                    {% else %}
+                                                        <span class="star">☆</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </span>
+                                            <span> ({{ chapter.rating_count }} ratings)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-danger text-center">
+                    <i class="far fa-frown" style="font-size: 30px;"></i>
+                    <p>It seems you’ve just started reading this book. Get started and add some chapters!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Genre Prediction Form -->
+    <div class="row" id="genre-prediction-row">
+        <div class="col-lg-12 col-md-12">
+            <form method="post" action="{% url 'genre_prediction' book_detail.id %}" class="mb-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-info">Predict Book Genre</button>
+            </form>
+        </div>
+        <div class="chatbot-button-container" style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'chatbot' %}" class="btn btn-primary" role="button">
+                Chat with Assistant
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Book Modal -->
+<div class="modal fade" id="editBookModal" tabindex="-1" role="dialog" aria-labelledby="editBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBookModalLabel">Edit Book Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-div">
+                <!-- The form will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Delete Confirmation -->
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="delete_book_confirmation" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this book? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <a id="delete-book-link" href="#" class="btn btn-danger">Yes, Delete</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on("click", "#chapter_data", function () {
+        var url = $(this).data('url');
+        $("#d_c1 a").attr("href", url);
+    });
+</script>
+
+<script>
+    // Function to set the delete link dynamically
+    function confirmDelete(bookId) {
+        const deleteLink = document.getElementById('delete-book-link');
+        deleteLink.href = `/books/${bookId}/delete/`;  // Set the delete URL
+    }
+
+    // Optional: Attach event listener to delete button to open modal
+    document.getElementById('delete-book-btn').addEventListener('click', function() {
+        const bookId = this.getAttribute('data-id');
+        confirmDelete(bookId);
+    });
+</script>
+
+    <script>
+        var modalDiv = $(".modal-div");
+        $(".open-modal").on("click", function() {
+        $.ajax({
+            type: 'GET',
+            url: $(this).attr("data-url"),
+            success: function(data) {
+                modalDiv.html(data);
+                $("#edit_book").modal();
+            }
+        });
+        });
+    </script>
+
+<script>
+    // Wait for the DOM to fully load scripts for deleting chapter
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteChapterModal'));
+        const deleteForm = document.getElementById('deleteChapterForm');
+        const deleteButton = document.querySelector('.btn-danger');
+        
+        document.querySelectorAll('.chapter-delete-modal').forEach(button => {
+            button.addEventListener('click', function() {
+                var deleteUrl = this.getAttribute('data-delete-url');
+                deleteForm.setAttribute('action', deleteUrl);
+
+                // Reset the delete button for user feedback
+                deleteButton.removeAttribute('disabled');
+                deleteButton.textContent = "Delete";
+                deleteButton.classList.remove('disabled');
+
+                // Show the modal
+                deleteModal.show();
+            });
+        });
+
+        // Add a loading effect to the delete button when it's clicked
+        deleteForm.addEventListener('submit', function() {
+            deleteButton.textContent = "Deleting...";
+            deleteButton.setAttribute('disabled', 'true');
+            deleteButton.classList.add('disabled');
+        });
+    });
+</script>
+
+
+
+<script>
+    // Handle delete book button click
+    $("#delete-book-btn").on("click", function() {
+        var url = $(this).data("url");
+        $("#delete-book-link").attr("href", url);
+        $("#delete_book_confirmation").modal("show");
+    });
+</script>
+{% endblock %}
+
+<script>
+    document.getElementById('editChapterForm').addEventListener('submit', function() {
+        $('#editChapterModal').modal('hide');
+    });
+
+    document.getElementById('deleteChapterForm').addEventListener('submit', function() {
+        $('#deleteChapterModal').modal('hide');
+    });
+</script>
+{% if chapter_form_error %}
+    <!-- Trigger Add Chapter modal if there's a form error for Add Chapter -->
+    <script>
+        $('#add_chapter').modal("show");
+    </script>
+{% endif %}
+
+<script>
+  $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip(); 
+  });
+</script>

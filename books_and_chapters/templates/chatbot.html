@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storyteller Chatbot</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8 text-center text-indigo-600">Storyteller Chatbot</h1>
+
+        <div class="max-w-lg mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="px-6 py-4">
+                <div class="font-bold text-xl mb-2 text-indigo-600">Chat with the Storyteller</div>
+                <div id="chat-box" class="h-96 overflow-y-auto">
+                    <!-- Chat messages will be appended here -->
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-100">
+                <div class="flex">
+                    <input type="text" id="user-input" placeholder="Type your message..." class="flex-1 px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                    <button onclick="sendMessage()" class="bg-indigo-600 text-white px-6 py-2 rounded-r-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function appendMessage(message, className) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `mb-4 ${className}`;
+            messageDiv.innerHTML = message;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const message = userInput.value.trim();
+            if (message === '') return;
+
+            appendMessage(`<strong>User:</strong> ${message}`, 'text-right text-blue-600');
+            userInput.value = '';
+
+            // Replace the fetch URL with your actual chatbot API endpoint
+            fetch('{% url "chatbot" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                appendMessage(`<strong>Storyteller:</strong> ${data.reply}`, 'text-left text-green-600');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

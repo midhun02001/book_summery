@@ -1,0 +1,33 @@
+<html>
+<head>
+    <style>
+        body { font-family: 'Arial', sans-serif; }
+        h1 { color: #0056b3; }
+        .summary-section, .genre-section, .wordcloud-section {
+            margin-bottom: 20px;
+        }
+        .wordcloud img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Genre Prediction Report 📚</h1>
+
+    <div class="summary-section">
+        <h2>📖 Book Summary</h2>
+        <p>{{ summary }}</p>
+    </div>
+
+    <div class="genre-section">
+        <h2>🔍 Predicted Genre</h2>
+        <p>{{ genre_prediction }}</p>
+    </div>
+
+    <div class="wordcloud-section">
+        <h2>☁️ Word Cloud</h2>
+        <img src="data:image/png;base64,{{ wordcloud_image }}" alt="Word Cloud">
+    </div>
+</body>
+</html>

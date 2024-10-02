@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block title %}{{ book_detail.book_name }}{% endblock %}
+
+{% block content %}
+
+    
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #343a40;
+        }
+        .btn-primary {
+            background-color: #5A67D8;
+            border-color: #5A67D8;
+        }
+        .btn-primary:hover {
+            background-color: #4C51BF;
+            border-color: #4C51BF;
+        }
+        .form-control:focus {
+            border-color: #5A67D8;
+            box-shadow: 0 0 0 0.2rem rgba(90, 103, 216, 0.25);
+        }
+    </style>
+
+
+<div class="container">
+    <div class="form-container">
+        <div class="form-title">Edit Book Details</div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.book_name.label }}
+                {{ form.book_name }}
+            </div>
+
+            <div class="form-group">
+                {{ form.author_name.label }}
+                {{ form.author_name }}
+            </div>
+
+            <div class="form-group">
+                {{ form.book_read_on.label }}
+                {{ form.book_read_on }}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            <a href="{% url 'book_detail' slug=book.slug %}" class="btn btn-secondary btn-block">Cancel</a>
+        </form>
+    </div>
+</div>
+
+
+
+{% endblock %}

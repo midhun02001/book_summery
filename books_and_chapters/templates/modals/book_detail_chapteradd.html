@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">Edit Chapter - {{ chapter.chapter_number }}</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Form Start -->
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        
+                        <div class="form-group">
+                            <label for="chapter_number">{{ form.chapter_number.label_tag }}</label>
+                            {{ form.chapter_number }}
+                            {% if form.chapter_number.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.chapter_number.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">{{ form.description.label_tag }}</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.description.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success px-4 py-2">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="{% url 'book_detail' slug=book.slug %}" class="btn btn-secondary px-4 py-2">
+                                <i class="fas fa-arrow-left"></i> Back to Book
+                            </a>
+                        </div>
+                    </form>
+                    <!-- Form End -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        margin-top: 20px;
+    }
+
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        padding: 1.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-control {
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Optional JS -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+{% endblock %}
